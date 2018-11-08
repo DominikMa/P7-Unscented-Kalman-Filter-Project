@@ -32,7 +32,7 @@ public:
   MatrixXd Xsig_pred_;
 
   ///* time when the state is true, in us
-  long long time_us_;
+  long long previous_timestamp_;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
   double std_a_;
@@ -67,6 +67,26 @@ public:
   ///* Sigma point spreading parameter
   double lambda_;
 
+  int n_sig_;
+  int n_aug_sig_;
+  int n_z_laser_;
+  int n_z_radar_;
+
+  //Prediction
+  MatrixXd Xsig_;
+  VectorXd x_aug_;
+  MatrixXd P_aug_;
+  MatrixXd Xsig_aug_;
+
+  //Update Radar
+  MatrixXd Z_radar_sig_;
+  VectorXd z_radar_pred;
+  MatrixXd R_radar_;
+  MatrixXd S_radar_;
+  MatrixXd Tc_radar_;
+
+  std::vector<float> NIS_laser_;
+  std::vector<float> NIS_radar_;
 
   /**
    * Constructor
