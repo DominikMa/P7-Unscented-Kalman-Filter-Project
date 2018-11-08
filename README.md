@@ -1,92 +1,58 @@
-# Unscented Kalman Filter Project Starter Code
-Self-Driving Car Engineer Nanodegree Program
+# Unscented Kalman Filter Project
 
-In this project utilize an Unscented Kalman Filter to estimate the state of a moving object of interest with noisy lidar and radar measurements. Passing the project requires obtaining RMSE values that are lower that the tolerance outlined in the project rubric. 
+This repository contains my solution for the project "Unscented Kalman Filter Project" of the Udacity Self-Driving Car Engineer Nanodegree Program. A description of a basic setup can be found in the [original repository](https://github.com/udacity/CarND-Unscented-Kalman-Filter-Project). The written code could be found in the files [ukf.cpp](./src/ukf.cpp), [tools.cpp](./src/tools.cpp) and their corresponding header files.
 
-This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases)
-
-This repository includes two files that can be used to set up and intall [uWebSocketIO](https://github.com/uWebSockets/uWebSockets) for either Linux or Mac systems. For windows you can use either Docker, VMware, or even [Windows 10 Bash on Ubuntu](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/) to install uWebSocketIO. Please see [this concept in the classroom](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/16cf4a78-4fc7-49e1-8621-3450ca938b77) for the required version and installation scripts.
-
-Once the install for uWebSocketIO is complete, the main program can be built and ran by doing the following from the project top directory.
-
-1. mkdir build
-2. cd build
-3. cmake ..
-4. make
-5. ./UnscentedKF
-
-Tips for setting up your environment can be found [here](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/23d376c7-0195-4276-bdf0-e02f1f3c665d)
-
-Note that the programs that need to be written to accomplish the project are src/ukf.cpp, src/ukf.h, tools.cpp, and tools.h
-
-The program main.cpp has already been filled out, but feel free to modify it.
-
-Here is the main protcol that main.cpp uses for uWebSocketIO in communicating with the simulator.
-
-
-INPUT: values provided by the simulator to the c++ program
-
-["sensor_measurement"] => the measurment that the simulator observed (either lidar or radar)
-
-
-OUTPUT: values provided by the c++ program to the simulator
-
-["estimate_x"] <= kalman filter estimated position x
-["estimate_y"] <= kalman filter estimated position y
-["rmse_x"]
-["rmse_y"]
-["rmse_vx"]
-["rmse_vy"]
+The following part of the README contains a very short writeup which describes what is done.
 
 ---
 
-## Other Important Dependencies
-* cmake >= 3.5
-  * All OSes: [click here for installation instructions](https://cmake.org/install/)
-* make >= 4.1 (Linux, Mac), 3.81 (Windows)
-  * Linux: make is installed by default on most Linux distros
-  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
-  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
-* gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
-  * Windows: recommend using [MinGW](http://www.mingw.org/)
+In this project an Unscented Kalman filter is implemented to combine laser and radar measurements to predict the location of a car.
 
-## Basic Build Instructions
+In the file [ukf.cpp](./src/ukf.cpp) the initialization and logic of the UKF is implemented. On an arriving measurement first the prediction step is preformed and then the update step. If there are both laser and radar measurements at almost the same time the second prediction step is skipped to gain some performance. If the arriving measurement is the first measurement the UKF is initialized instead of preforming a prediction update step.
+
+Also the computation of the prediction and update step is done in this file. These computations simply follow the equations for an UKF.
+
+In [tools.cpp](./src/tools.cpp) there is a function for calculating the error RMSE.
+
+---
+
+Running the implementation with the [simulator](https://github.com/udacity/self-driving-car-sim/releases) leads to the following results for the RMSE:
+
+
+| RMSE UKF | Dataset 1 Both | Dataset 1 Laser | Dataset 1 Radar | Dataset 2 Both | Dataset 2 Laser | Dataset 2 Radar |
+|------|----------------|-----------------|-----------------|----------------|-----------------|-----------------|
+| X    | **0.0755**     | 0.1259          | 0.1891          | **0.0959**     | 0.1107          | 0.2032          |
+| Y    | **0.0836**     | 0.0982          | 0.2755          | **0.0813**     | 0.0951          | 0.2306          |
+| VX   | **0.3162**     | 0.7033          | 0.3834          | **0.4986**     | 0.6530          | 0.5749          |
+| VY   | **0.2016**     | 0.2316          | 0.3427          | **0.2267**     | 0.2460          | 0.3460          |
+
+With these results the RMSE of the implementation is low enough to successfully track the car.
+
+
+As one can see combining laser and radar measurements significantly improve the performance if as one would only use one sensor. Additionally the data shows that the laser measurements provide a way more accurate prediction. While the VX, VY RMSE of the radar sensor is not that bad compared to the laser sensor, the RMSE of X and Y is up to 3 times higher for the radar sensor. The reason for this should be that the position X and Y can only be measured indirectly by the radar sensor while the laser sensor measures it directly.
+
+Recalling the following results from the previous project for an EKF
+
+| RMSE EKF | Dataset 1 Both | Dataset 1 Laser | Dataset 1 Radar | Dataset 2 Both | Dataset 2 Laser | Dataset 2 Radar |
+|------|----------------|-----------------|-----------------|----------------|-----------------|-----------------|
+| X    | **0.0973**     | 0.1473          | 0.2302          | **0.0726**     | 0.1169          | 0.2706          |
+| Y    | **0.0855**     | 0.1153          | 0.3464          | **0.0965**     | 0.1260          | 0.3853          |
+| VX   | **0.4513**     | 0.6383          | 0.5835          | **0.4216**     | 0.6227          | 0.6524          |
+| VY   | **0.4399**     | 0.5346          | 0.8040          | **0.4932**     | 0.6024          | 0.9218          |
+
+one could see that the UKF is almost every time better then the EKF. The RMSE for X and Y is quite the same for the UKF and EKF but there is a significant improvement for VX and VY.
+
+# Build & Run
+
+### Dependencies
+
+* cmake >= 3.5
+* make >= 4.1 (Linux, Mac), 3.81 (Windows)
+* gcc/g++ >= 5.4
+
+### Basic Build Instructions
 
 1. Clone this repo.
 2. Make a build directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
-4. Run it: `./UnscentedKF` Previous versions use i/o from text files.  The current state uses i/o
-from the simulator.
-
-## Editor Settings
-
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
-
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
-
-## Code Style
-
-Please stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html) as much as possible.
-
-## Generating Additional Data
-
-This is optional!
-
-If you'd like to generate your own radar and lidar data, see the
-[utilities repo](https://github.com/udacity/CarND-Mercedes-SF-Utilities) for
-Matlab scripts that can generate additional data.
-
-## Project Instructions and Rubric
-
-This information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/c3eb3583-17b2-4d83-abf7-d852ae1b9fff/concepts/f437b8b0-f2d8-43b0-9662-72ac4e4029c1)
-for instructions and the project rubric.
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
-
+4. Run it: `./ExtendedKF `
