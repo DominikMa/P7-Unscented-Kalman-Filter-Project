@@ -44,7 +44,7 @@ one could see that the UKF is almost every time better then the EKF. The RMSE fo
 
 Calculating the NIS for laser and radar predictions results in
 
-  | x².950  | x².900  | x².100  | x².050
+ NIS | x².950  | x².900  | x².100  | x².050
 --|---|---|---|--
  Radar NIS | 0.919679  | 0.851406  | 0.0803213  |  0.0401606
  Laser NIS | 0.947791  | 0.911647  | 0.060241  |  0.0281125
