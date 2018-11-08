@@ -42,6 +42,16 @@ Recalling the following results from the previous project for an EKF
 
 one could see that the UKF is almost every time better then the EKF. The RMSE for X and Y is quite the same for the UKF and EKF but there is a significant improvement for VX and VY.
 
+Calculating the NIS for laser and radar predictions results in
+
+  | x².950  | x².900  | x².100  | x².050
+--|---|---|---|--
+ Radar NIS | 0.919679  | 0.851406  | 0.0803213  |  0.0401606
+ Laser NIS | 0.947791  | 0.911647  | 0.060241  |  0.0281125
+
+which nearly matches the expected distribution. This shows that the process noise is well adjusted.
+
+
 # Build & Run
 
 ### Dependencies
